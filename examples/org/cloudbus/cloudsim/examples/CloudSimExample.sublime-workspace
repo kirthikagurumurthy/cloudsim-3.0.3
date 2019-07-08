@@ -1,0 +1,341 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"n",
+				"n"
+			],
+			[
+				"can",
+				"canplacevalue"
+			],
+			[
+				"margin",
+				"margin-left\tproperty"
+			],
+			[
+				"marg",
+				"margin-bottom\tproperty"
+			],
+			[
+				"mar",
+				"margin-left\tproperty"
+			],
+			[
+				"t",
+				"type\tAttr"
+			],
+			[
+				"ma",
+				"margin-bottom\tproperty"
+			],
+			[
+				"margi",
+				"margin\tproperty"
+			],
+			[
+				"ac",
+				"action\tAttr"
+			],
+			[
+				"in",
+				"input\tTag"
+			],
+			[
+				"paddi",
+				"padding-right\tproperty"
+			],
+			[
+				"pad",
+				"padding-left\tproperty"
+			],
+			[
+				"padd",
+				"padding-bottom\tproperty"
+			],
+			[
+				"padding",
+				"padding\tproperty"
+			],
+			[
+				"dis",
+				"display\tproperty"
+			],
+			[
+				"l",
+				"li\tTag"
+			],
+			[
+				"u",
+				"ul\tTag"
+			],
+			[
+				"prime",
+				"prime1"
+			],
+			[
+				"c",
+				"c"
+			],
+			[
+				"pd",
+				"padding-right\tproperty"
+			],
+			[
+				"wid",
+				"width\tproperty"
+			],
+			[
+				"adul",
+				"adults"
+			],
+			[
+				"au",
+				"adults"
+			],
+			[
+				"get",
+				"getElementById"
+			],
+			[
+				"va",
+				"value"
+			],
+			[
+				"onc",
+				"onclick\tAttr"
+			],
+			[
+				"backg",
+				"background-size\tproperty"
+			],
+			[
+				"backgr",
+				"background-position\tproperty"
+			],
+			[
+				"col",
+				"color\tproperty"
+			],
+			[
+				"al",
+				"text-align\tproperty"
+			],
+			[
+				"di",
+				"div\tTag"
+			],
+			[
+				"fo",
+				"font-weight\tproperty"
+			],
+			[
+				"font",
+				"font-size\tproperty"
+			],
+			[
+				"text",
+				"text-decoration\tproperty"
+			],
+			[
+				"border",
+				"border-spacing\tproperty"
+			],
+			[
+				"backgroun",
+				"background-color\tproperty"
+			],
+			[
+				"back",
+				"background-color\tproperty"
+			],
+			[
+				"last",
+				"Last"
+			],
+			[
+				"op",
+				"option\tTag"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/xampp/htdocs/rootfolder/include/check.php",
+		"/C/xampp/htdocs/rootfolder/index.php",
+		"/C/xampp/htdocs/rootfolder/next.php",
+		"/C/xampp/htdocs/rootfolder/search.php",
+		"/C/xampp/htdocs/rootfolder/css/search.css",
+		"/C/xampp/htdocs/rootfolder/includes/dbh.inc.php",
+		"/C/xampp/htdocs/rootfolder/includes/insert.php",
+		"/C/xampp/htdocs/rootfolder/duplicate.txt",
+		"/C/xampp/htdocs/rootfolder/bus.css",
+		"/C/xampp/htdocs/rootfolder/home.php",
+		"/C/xampp/htdocs/rootfolder/home.css",
+		"/C/xampp/htdocs/rootfolder/ticket.php",
+		"/C/Users/Anantharam/Desktop/test1.py",
+		"/C/Users/Anantharam/Desktop/test.py",
+		"/C/xampp/htdocs/rootfolder/ticket.css",
+		"/C/xampp/htdocs/rootfolder/index.css",
+		"/C/xampp/htdocs/rootfolder/index",
+		"/C/xampp/htdocs/rootfolder/style.css",
+		"/C/xampp/htdocs/rootfolder/bus.php",
+		"/C/xampp/htdocs/rootfolder/css/style.css",
+		"/C/Users/Anantharam/Desktop/test.c"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "CloudSimExample.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 222.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
