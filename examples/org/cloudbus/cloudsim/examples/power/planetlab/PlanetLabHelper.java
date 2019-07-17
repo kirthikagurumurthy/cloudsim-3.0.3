@@ -74,5 +74,56 @@ public class PlanetLabHelper {
 
 		return list;
 	}
+/*
+	public static List<Cloudlet> createCloudletListPlanetLab(int brokerId, String inputFolderName, List<Vm> vmlist, long fileIOSize)
+			throws FileNotFoundException {
+		List<Cloudlet> list = new ArrayList<Cloudlet>();
 
+		long fileSize = fileIOSize;
+		long outputSize = fileIOSize;
+		//UtilizationModel utilizationModelNull = new UtilizationModelNull();
+
+		File inputFolder = new File(inputFolderName);
+		File[] files = inputFolder.listFiles();
+
+		for (int i = 0; i < 1; i++) {
+			Cloudlet cloudlet = null;
+			try {
+				cloudlet = new Cloudlet(
+						i,
+						Constants.CLOUDLET_LENGTH,
+						Constants.CLOUDLET_PES,
+						fileSize,
+						outputSize,
+						new UtilizationModelPlanetLabInMemory(
+								files[i].getAbsolutePath(),
+								Constants.SCHEDULING_INTERVAL), new UtilizationModelPlanetLabInMemoryRam(files[i].getAbsolutePath(), Constants.SCHEDULING_INTERVAL) , new UtilizationModelPlanetLabInMemoryBw(files[i].getAbsolutePath(), Constants.SCHEDULING_INTERVAL));
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(0);
+			}
+			cloudlet.setUserId(brokerId);
+			for(Vm vm : vmlist) {
+				if(fileIOSize < vm.getSize()) {
+					vm.setSize(vm.getSize() - fileIOSize);
+					cloudlet.setVmId(vm.getId());
+					
+				}
+				else {
+					cloudlet.setVmId(-1);
+				}
+			}
+			
+			if(cloudlet.getVmId() != -1) {
+				list.add(cloudlet);
+			}
+			else {
+				Log.printLine("Not enough storage memory in any of the VMs to assign cloudlet "+i+"!");
+			}
+			
+		}
+
+		return list;
+	
+	} */
 }
