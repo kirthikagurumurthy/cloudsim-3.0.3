@@ -75,6 +75,8 @@ public class PlanetLabHelper {
 		return list;
 	}
 /*
+ *Storage capacity is taken into consideration here. 
+ * 
 	public static List<Cloudlet> createCloudletListPlanetLab(int brokerId, String inputFolderName, List<Vm> vmlist, long fileIOSize)
 			throws FileNotFoundException {
 		List<Cloudlet> list = new ArrayList<Cloudlet>();
