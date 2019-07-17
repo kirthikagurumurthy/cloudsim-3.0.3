@@ -14,7 +14,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.lists.PeList;
 import org.cloudbus.cloudsim.provisioners.BwProvisioner;
 import org.cloudbus.cloudsim.provisioners.RamProvisioner;
-import org.cloudbus.cloudsim.provisioners.RamProvisionerPlanetLab;
+
 
 /**
  * Host executes actions related to management of virtual machines (e.g., creation and destruction).
@@ -41,7 +41,7 @@ public class Host {
 
 	/** The allocation policy. */
 	private VmScheduler vmScheduler;
-	RamProvisionerPlanetLab RamProvisionerPlanetLab;
+	
 	/** The vm list. */
 	private final List<? extends Vm> vmList = new ArrayList<Vm>();
 
@@ -141,7 +141,10 @@ public class Host {
 				System.exit(0);
 			}
 
-			setStorage(getStorage() - vm.getSize());
+			if(getStorage() > vm.getSize()) {
+				setStorage(getStorage() - vm.getSize());
+			}
+			
 
 			getVmsMigratingIn().add(vm);
 			getVmList().add(vm);
@@ -177,7 +180,9 @@ public class Host {
 			getRamProvisioner().allocateRamForVm(vm, vm.getCurrentRequestedRam());
 			getBwProvisioner().allocateBwForVm(vm, vm.getCurrentRequestedBw());
 			getVmScheduler().allocatePesForVm(vm, vm.getCurrentRequestedMips());
-			setStorage(getStorage() - vm.getSize());
+			if(getStorage() > vm.getSize()) {
+				setStorage(getStorage() - vm.getSize());
+			}
 		}
 	}
 
@@ -230,7 +235,9 @@ public class Host {
 			return false;
 		}
 
-		setStorage(getStorage() - vm.getSize());
+		if(getStorage() > vm.getSize()) {
+			setStorage(getStorage() - vm.getSize());
+		}
 		getVmList().add(vm);
 		vm.setHost(this);
 		return true;

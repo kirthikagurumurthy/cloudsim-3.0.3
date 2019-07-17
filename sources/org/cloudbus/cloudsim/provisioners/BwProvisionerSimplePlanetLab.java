@@ -48,9 +48,8 @@ public class BwProvisionerSimplePlanetLab extends BwProvisioner {
 	//Changes made here.
 	public boolean allocateBwForVm(Vm vm, long bw) {
 		deallocateBwForVm(vm);
-		setUtilizationModel(vm.getCloudletScheduler().getNextFinishedCloudlet().getUtilizationModelBw());
-		
-		if (Math.round(UtilizationModel.getUtilization(CloudSim.clock())*getAvailableBw()) >= bw) {
+
+		if (getAvailableBw() >= bw) {
 			setAvailableBw(getAvailableBw() - bw);
 			getBwTable().put(vm.getUid(), bw);
 			vm.setCurrentAllocatedBw(getAllocatedBwForVm(vm));
@@ -59,6 +58,13 @@ public class BwProvisionerSimplePlanetLab extends BwProvisioner {
 
 		vm.setCurrentAllocatedBw(getAllocatedBwForVm(vm));
 		return false;
+	}
+	
+	public boolean allocateBwForVm(Vm vm) {
+		setUtilizationModel(vm.getCloudletScheduler().getNextFinishedCloudlet().getUtilizationModelBw());
+		@SuppressWarnings("deprecation")
+		Double requiredBw = new Double(UtilizationModel.getUtilization(CloudSim.clock())*getAvailableBw());
+		return allocateBwForVm(vm, requiredBw.intValue());
 	}
 
 	/*
@@ -104,7 +110,7 @@ public class BwProvisionerSimplePlanetLab extends BwProvisioner {
 	 */
 	@Override
 	
-	//Changes made here , time and Utilization model extra parameters
+	
 	public boolean isSuitableForVm(Vm vm, long bw) {
 		long allocatedBw = getAllocatedBwForVm(vm);
 		boolean result = allocateBwForVm(vm, bw);
@@ -113,6 +119,13 @@ public class BwProvisionerSimplePlanetLab extends BwProvisioner {
 			allocateBwForVm(vm, bw);
 		}
 		return result;
+	}
+	
+	public boolean isSuitableForVm(Vm vm) {
+		setUtilizationModel(vm.getCloudletScheduler().getNextFinishedCloudlet().getUtilizationModelBw());
+		@SuppressWarnings("deprecation")
+		Double requiredBw = new Double(UtilizationModel.getUtilization(CloudSim.clock())*getAvailableBw());
+		return isSuitableForVm(vm, requiredBw.intValue());
 	}
 
 	/**

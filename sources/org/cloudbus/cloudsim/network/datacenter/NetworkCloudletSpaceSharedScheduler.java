@@ -589,6 +589,22 @@ public class NetworkCloudletSpaceSharedScheduler extends CloudletScheduler {
 		}
 		return totalUtilization;
 	}
+	
+	public double getTotalUtilizationOfRam(double time) {
+		double totalUtilization = 0;
+		for (ResCloudlet gl : getCloudletExecList()) {
+			totalUtilization += gl.getCloudlet().getUtilizationOfRam(time);
+		}
+		return totalUtilization;
+	}
+	
+	public double getTotalUtilizationOfBw(double time) {
+		double totalUtilization = 0;
+		for (ResCloudlet gl : getCloudletExecList()) {
+			totalUtilization += gl.getCloudlet().getUtilizationOfBw(time);
+		}
+		return totalUtilization;
+	}
 
 	/**
 	 * Informs about completion of some cloudlet in the VM managed by this scheduler.

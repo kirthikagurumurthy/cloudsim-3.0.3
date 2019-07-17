@@ -53,7 +53,7 @@ public class HarddriveStorage implements Storage {
 
 	/** the latency of the harddrive in seconds. */
 	private double latency;
-
+	//Seek time is the time taken for a hard disk controller to locate a specific piece of stored data.
 	/** the average seek time in seconds. */
 	private double avgSeekTime;
 

@@ -6,12 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.UtilizationModel;
 import org.cloudbus.cloudsim.UtilizationModelNull;
 import org.cloudbus.cloudsim.UtilizationModelPlanetLabInMemory;
 import org.cloudbus.cloudsim.UtilizationModelPlanetLabInMemoryBw;
 import org.cloudbus.cloudsim.UtilizationModelPlanetLabInMemoryRam;
+import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.examples.power.Constants;
+import org.cloudbus.cloudsim.lists.VmList;
 
 /**
  * A helper class for the running examples for the PlanetLab workload.

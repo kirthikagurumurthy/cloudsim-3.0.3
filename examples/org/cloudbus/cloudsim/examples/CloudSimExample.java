@@ -79,8 +79,8 @@ public class CloudSimExample {
 		
 		long cloudletLength = 40000;
 		int pesNumber = 1;
-		long cloudletFileSize = 300;
-		long cloudletOutputSize = 400;
+		long cloudletFileSize = 30000000;
+		long cloudletOutputSize = 40000000;
 		//UtilizationModelStochastic Utilize = new UtilizationModelStochastic();
 		
 		
@@ -100,8 +100,8 @@ public class CloudSimExample {
 		}
 		//5.0:	Create VMs(Define the procedure for Task scheduling algorithm)
 		List<Vm> vmlist = new ArrayList<Vm>();
-		long diskSize = 20000;
-		int ram = 2000;
+		long diskSize = 0;
+		int ram = 2000; 	
 		int mips = 1000;
 		int bandwidth = 1000;
 		int vCPU = 1;

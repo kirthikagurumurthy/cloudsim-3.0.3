@@ -131,10 +131,52 @@ public class DatacenterBroker extends SimEntity {
 	 * @pre id > 0
 	 * @post $none
 	 */
+	
+	//Changes made from here.
 	public void bindCloudletToVm(int cloudletId, int vmId) {
 		CloudletList.getById(getCloudletList(), cloudletId).setVmId(vmId);
 	}
-
+	
+	
+	
+	public void assignCloudlets() {
+		for(Cloudlet cloudlet : getCloudletList()) {
+			cloudlet.setVmId(-1);
+		}
+		
+		for(Cloudlet cloudlet : getCloudletList()) {
+			for(Vm vm : getVmsCreatedList()) {
+				if(cloudlet.getCloudletFileSize() < vm.getSize()) {
+					vm.setSize(vm.getSize() - cloudlet.getCloudletFileSize());
+					cloudlet.setVmId(vm.getId());
+				}	
+			}
+			if(cloudlet.getVmId() == -1) {
+				getCloudletList().remove(cloudlet);
+				Log.printLine("Not enough storage memory in any of the VMs to assign cloudlet "+cloudlet.getCloudletId()+"!");
+			}
+		}
+	}
+	
+	public void assignCloudletToVm(int cloudletId ) {
+		Cloudlet cloudlet = CloudletList.getById(getCloudletList(), cloudletId);
+		for(Vm vm : getVmsCreatedList()) {
+			if(cloudlet.getCloudletFileSize() < vm.getSize()) {
+				vm.setSize(vm.getSize() - cloudlet.getCloudletFileSize());
+				cloudlet.setVmId(vm.getId());
+			}	
+			else {
+				cloudlet.setVmId(-1);
+		}
+		if(cloudlet.getVmId() == -1) {
+			cloudletList.remove(cloudlet);
+			Log.printLine("Not enough storage memory in any of the VMs to assign cloudlet "+cloudlet.getCloudletId()+"!");
+		}
+	}
+	}
+	
+	//-------------------------------------------------------------------------------------------------------------------------------
+	
 	/**
 	 * Processes events available for this Broker.
 	 * 

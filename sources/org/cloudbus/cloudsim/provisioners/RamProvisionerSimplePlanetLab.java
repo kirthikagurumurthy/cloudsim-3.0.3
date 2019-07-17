@@ -23,7 +23,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
  * @author Anton Beloglazov
  * @since CloudSim Toolkit 1.0
  */
-public class RamProvisionerSimplePlanetLab extends RamProvisioner {
+public class RamProvisionerSimplePlanetLab extends RamProvisionerPlanetLab {
 
 	/** The RAM table. */
 	private Map<String, Integer> ramTable;
@@ -45,15 +45,15 @@ public class RamProvisionerSimplePlanetLab extends RamProvisioner {
 	 */
 	@Override
 	public boolean allocateRamForVm(Vm vm, int ram) {
-		setUtilizationModel(vm.getCloudletScheduler().getNextFinishedCloudlet().getUtilizationModelRam());
 		int maxRam = vm.getRam();
+
 		if (ram >= maxRam) {
 			ram = maxRam;
 		}
 
 		deallocateRamForVm(vm);
 
-		if (Math.round(UtilizationModel.getUtilization(CloudSim.clock())*getAvailableRam()) >= ram) {
+		if (getAvailableRam() >= ram) {
 			setAvailableRam(getAvailableRam() - ram);
 			getRamTable().put(vm.getUid(), ram);
 			vm.setCurrentAllocatedRam(getAllocatedRamForVm(vm));
@@ -64,7 +64,13 @@ public class RamProvisionerSimplePlanetLab extends RamProvisioner {
 
 		return false;
 	}
-
+	
+	public boolean allocateRamForVm(Vm vm) {
+		setUtilizationModel(vm.getCloudletScheduler().getNextFinishedCloudlet().getUtilizationModelRam());
+		@SuppressWarnings("deprecation")
+		Double requiredBw = new Double(UtilizationModel.getUtilization(CloudSim.clock())*getAvailableRam());
+		return allocateRamForVm(vm, requiredBw.intValue());
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see cloudsim.provisioners.RamProvisioner#getAllocatedRamForVm(cloudsim.Vm)
@@ -114,6 +120,13 @@ public class RamProvisionerSimplePlanetLab extends RamProvisioner {
 			allocateRamForVm(vm, allocatedRam);
 		}
 		return result;
+	}
+	
+	public boolean isSuitableForVm(Vm vm) {
+		setUtilizationModel(vm.getCloudletScheduler().getNextFinishedCloudlet().getUtilizationModelBw());
+		@SuppressWarnings("deprecation")
+		Double requiredRam = new Double(UtilizationModel.getUtilization(CloudSim.clock())*getAvailableRam());
+		return isSuitableForVm(vm, requiredRam.intValue());
 	}
 
 	/**

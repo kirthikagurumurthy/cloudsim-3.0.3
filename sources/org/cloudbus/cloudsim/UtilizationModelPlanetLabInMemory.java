@@ -34,7 +34,8 @@ public class UtilizationModelPlanetLabInMemory implements UtilizationModel {
 			workloadvalues = (input.readLine()).split(" ",-1);
 			data[i] = Integer.valueOf(workloadvalues[0]) / 100.0;
 		}
-		data[n - 1] = data[n - 2];
+		data[n - 1] = data[n - 2]; 
+	
 		input.close();
 	}
 	

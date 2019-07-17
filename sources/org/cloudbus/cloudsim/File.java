@@ -51,6 +51,27 @@ public class File {
 	 *             <li>the file size is zero or negative numbers
 	 *             </ul>
 	 */
+	
+	public File(String fileName, double time, UtilizationModel UtilizationModel , double capacity) throws ParameterException {
+		@SuppressWarnings("deprecation")
+		Double  FileSize= new Double(UtilizationModel.getUtilization(time)*capacity);
+		int fileSize = FileSize.intValue();
+		if (fileName == null || fileName.length() == 0) {
+			throw new ParameterException("File(): Error - invalid file name.");
+		}
+
+		if (fileSize <= 0) {
+			throw new ParameterException("File(): Error - size <= 0.");
+		}
+
+		name = fileName;
+		attribute = new FileAttribute(fileName, fileSize);
+		transactionTime = 0;
+		
+	}
+	
+	
+	
 	public File(String fileName, int fileSize) throws ParameterException {
 		if (fileName == null || fileName.length() == 0) {
 			throw new ParameterException("File(): Error - invalid file name.");
