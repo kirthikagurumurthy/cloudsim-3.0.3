@@ -25,8 +25,8 @@ public interface WorkloadStorage {
 	 */
 	double getSize(double time, double percentage, int fileSize);
 	
-	int  getNumber(double time, File file);
+	int  getNumber(double time, int fileSize);
 	
-	int getTotalNumber(double percentagePerWrite, File file );
+	int getTotalNumber(double percentagePerWrite, int fileSize );
 
 }
