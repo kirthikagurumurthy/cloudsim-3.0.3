@@ -73,7 +73,7 @@ public class WorkloadStoragePlanetLabRead implements WorkloadStorage {
 		for (int i = 0; i < n - 1; i++) {
 			String[] workloadvalues = new String[3];
 			workloadvalues = (input.readLine()).split("",-1);
-			data[i] = Integer.valueOf(workloadvalues[3]) / 100.0;
+			data[i] = Integer.valueOf(workloadvalues[4]) / 100.0;
 		}
 		data[n - 1] = data[n - 2];
 		input.close();
