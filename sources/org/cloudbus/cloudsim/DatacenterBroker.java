@@ -139,17 +139,20 @@ public class DatacenterBroker extends SimEntity {
 	
 	
 	
-	public void assignCloudlets() {
-		for(Cloudlet cloudlet : getCloudletList()) {
-			cloudlet.setVmId(-1);
-		}
+/*	public void assignCloudlets(List<Vm> vmlist, List<Cloudlet> cloudletlist) {
 		
-		for(Cloudlet cloudlet : getCloudletList()) {
+		for(Cloudlet cloudlet : cloudletlist) {
 			for(Vm vm : getVmsCreatedList()) {
 				if(cloudlet.getCloudletFileSize() < vm.getSize()) {
+					
+					Log.printLine("Assigning Cloudlet "+cloudlet.getCloudletId() +" to Vm "+ vm.getId());
 					vm.setSize(vm.getSize() - cloudlet.getCloudletFileSize());
 					cloudlet.setVmId(vm.getId());
+					break;
 				}	
+				else {
+					cloudlet.setVmId(-1);
+				}
 			}
 			if(cloudlet.getVmId() == -1) {
 				getCloudletList().remove(cloudlet);
@@ -164,6 +167,7 @@ public class DatacenterBroker extends SimEntity {
 			if(cloudlet.getCloudletFileSize() < vm.getSize()) {
 				vm.setSize(vm.getSize() - cloudlet.getCloudletFileSize());
 				cloudlet.setVmId(vm.getId());
+				break;
 			}	
 			else {
 				cloudlet.setVmId(-1);
@@ -176,7 +180,7 @@ public class DatacenterBroker extends SimEntity {
 	}
 	
 	//-------------------------------------------------------------------------------------------------------------------------------
-	
+	*/
 	/**
 	 * Processes events available for this Broker.
 	 * 
@@ -382,11 +386,41 @@ public class DatacenterBroker extends SimEntity {
 	 */
 	protected void submitCloudlets() {
 		int vmIndex = 0;
+		int previndex = 0;
 		for (Cloudlet cloudlet : getCloudletList()) {
-			Vm vm;
+			Vm vm = null;
 			// if user didn't bind this cloudlet and it has not been executed yet
 			if (cloudlet.getVmId() == -1) {
-				vm = getVmsCreatedList().get(vmIndex);
+				
+				//Checking if enough number of processing elements and enough storage capacity is available in VMs.
+				int count = 0;
+				while(count<getVmsCreatedList().size()) {
+					vm = getVmsCreatedList().get(vmIndex);
+					if(cloudlet.getNumberOfPes() > vm.getNumberOfPes()) {
+						cloudlet.setVmId(-1);
+						count++; //To check if we have iterated through all possible vms.
+						vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
+						
+					}
+					else if(cloudlet.getCloudletFileSize() > vm.getSize()) {
+						cloudlet.setVmId(-1);
+						count++;
+						vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
+					}
+					else {
+						Log.printLine(CloudSim.clock() + ": " + getName() + ": cloudlet "+cloudlet.getCloudletId() + " is being sent to Vm "+ vm.getId() );
+						vm.setSize(vm.getSize() - cloudlet.getCloudletFileSize());//setting the new size once cloudlet is assigned to this vm.
+						
+						cloudlet.setVmId(vm.getId());//assigning the cloudlets to the vm.
+						break;
+					}
+				}
+				if(cloudlet.getVmId() == -1) {
+					Log.printLine("Cloudlet "+cloudlet.getCloudletId()+" could not be assigned to any vm.");
+					getCloudletList().remove(cloudlet.getCloudletId());
+					break;
+				}
+				
 			} else { // submit to the specific vm
 				vm = VmList.getById(getVmsCreatedList(), cloudlet.getVmId());
 				if (vm == null) { // vm was not created
@@ -395,13 +429,13 @@ public class DatacenterBroker extends SimEntity {
 					continue;
 				}
 			}
-
-			Log.printLine(CloudSim.clock() + ": " + getName() + ": Sending cloudlet "
-					+ cloudlet.getCloudletId() + " to VM #" + vm.getId());
+		
+			Log.printLine(CloudSim.clock() + ": " + getName() + ": cloudlet "
+					+ cloudlet.getCloudletId() + " sent to VM #" + vm.getId());
 			cloudlet.setVmId(vm.getId());
 			sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
 			cloudletsSubmitted++;
-			vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
+		vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
 			getCloudletSubmittedList().add(cloudlet);
 		}
 

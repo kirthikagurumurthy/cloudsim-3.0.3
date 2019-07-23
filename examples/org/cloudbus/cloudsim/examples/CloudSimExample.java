@@ -51,7 +51,7 @@ public class CloudSimExample {
 		//1.0: Initialize the Cloudsim package. It should be called before creating any entities.
 		int numUser = 1;
 		Calendar cal = Calendar.getInstance();
-		String inputFolder = NonPowerAware.class.getClassLoader().getResource("workload/planetlab/20110303")
+		String inputFolder = CloudSimExample.class.getClassLoader().getResource("workload/planetlab/20110303")
 				.getPath();
 		
 		File input = new File(inputFolder);
@@ -79,12 +79,12 @@ public class CloudSimExample {
 		
 		long cloudletLength = 40000;
 		int pesNumber = 1;
-		long cloudletFileSize = 30000000;
-		long cloudletOutputSize = 40000000;
+		long cloudletFileSize = 300;
+		long cloudletOutputSize = 400;
 		//UtilizationModelStochastic Utilize = new UtilizationModelStochastic();
 		
 		
-		for(int cloudletId=0;cloudletId<1;cloudletId++) {
+		for(int cloudletId=0;cloudletId<2;cloudletId++) {
 	try {
 	Cloudlet newcloudlet = new Cloudlet(cloudletId,cloudletLength,pesNumber,cloudletFileSize,cloudletOutputSize,new UtilizationModelPlanetLabInMemory(
 			files[cloudletId].getAbsolutePath(),
@@ -100,9 +100,9 @@ public class CloudSimExample {
 		}
 		//5.0:	Create VMs(Define the procedure for Task scheduling algorithm)
 		List<Vm> vmlist = new ArrayList<Vm>();
-		long diskSize = 0;
+		long diskSize = 20000;
 		int ram = 2000; 	
-		int mips = 1000;
+		int mips = 100;
 		int bandwidth = 1000;
 		int vCPU = 1;
 		String VMM = "XEN";
@@ -112,8 +112,12 @@ public class CloudSimExample {
 			vmlist.add(VirtualMachine);
 		}
 		
+		
+		
 		dcb.submitCloudletList(cloudletList);
 		dcb.submitVmList(vmlist);
+		
+	//	dcb.assignCloudlets(vmlist,cloudletList);
 				//6.0: Starts the simulation(automated process, handled through discrete event simulation engine)
 				CloudSim.startSimulation();
 				
@@ -128,7 +132,7 @@ Log.printLine("Result of Cloudlet No. " + cloudletNo++);
 Log.printLine();
 Log.printLine("CloudletID : "+ c.getCloudletId() + ",VM_ID : " + c.getVmId() + ",status:" + c.getStatusString(c.getStatus()) + ",StartTime: " + c.getExecStartTime() + ",FinishTime: " + c.getFinishTime() + " ,Submission time: " + c.getSubmissionTime() + " ,No. of processors: "+ c.getNumberOfPes() + ",timeb/wevents: "+ CloudSim.getMinTimeBetweenEvents() + ", CPUruntime: "+ c.getActualCPUTime() + ",CloudletWaitingTime: "+ c.getWaitingTime());
 
-for(double Time=c.getSubmissionTime();Time<c.getFinishTime();Time=Time+1) {
+for(double Time=c.getExecStartTime();Time<c.getFinishTime();Time=Time+1) {
 	Log.printLine();
 	Log.printLine("CPUutilization at time :"+Time+" is:"+c.getUtilizationOfCpu(Time));
 	Log.printLine("RamUtilization at time "+ Time +":" + c.getUtilizationOfRam(Time));

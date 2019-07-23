@@ -28,21 +28,29 @@ public class UtilizationModelPlanetLabInMemoryRam implements UtilizationModel {
 		data = new double[289];
 		setSchedulingInterval(schedulingInterval);
 		BufferedReader input = new BufferedReader(new FileReader(inputPath));
-		int n = 10;
+		int n = data.length;
+	
 		for (int i = 0; i < n - 1; i++) {
+			try {
 			int length = ((input.readLine()).split(" ",-1)).length;
 			String[] workloadvalues = new String[length];
-			if(length == 1) {
+			if(length <= 1) {
 				data[i] = 0;
 			}
 			else {
 			workloadvalues = (input.readLine()).split(" ",-1);
 			data[i] = Integer.valueOf(workloadvalues[1])/ 100.0;
 			}
+			}
+			catch(Exception e) {
+				data[i]=0;
+			}
 		}
 		data[n - 1] = data[n - 2];
 		input.close();
 	}
+		
+	
 	
 	/**
 	 * Instantiates a new utilization model PlanetLab with variable data samples.

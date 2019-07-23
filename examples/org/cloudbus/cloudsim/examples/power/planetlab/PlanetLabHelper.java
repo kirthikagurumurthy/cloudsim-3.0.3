@@ -68,6 +68,7 @@ public class PlanetLabHelper {
 				System.exit(0);
 			}
 			cloudlet.setUserId(brokerId);
+			
 			cloudlet.setVmId(i);
 			list.add(cloudlet);
 		}
@@ -76,7 +77,7 @@ public class PlanetLabHelper {
 	}
 /*
  *Storage capacity is taken into consideration here. 
- * 
+ */
 	public static List<Cloudlet> createCloudletListPlanetLab(int brokerId, String inputFolderName, List<Vm> vmlist, long fileIOSize)
 			throws FileNotFoundException {
 		List<Cloudlet> list = new ArrayList<Cloudlet>();
@@ -106,13 +107,15 @@ public class PlanetLabHelper {
 			}
 			cloudlet.setUserId(brokerId);
 			for(Vm vm : vmlist) {
-				if(fileIOSize < vm.getSize()) {
-					vm.setSize(vm.getSize() - fileIOSize);
-					cloudlet.setVmId(vm.getId());
-					
+				if(fileIOSize > vm.getSize()) {
+					cloudlet.setVmId(-1);
+				}
+				else if(cloudlet.getNumberOfPes() > vm.getNumberOfPes()) {
+					cloudlet.setVmId(-1);
 				}
 				else {
-					cloudlet.setVmId(-1);
+					vm.setSize(vm.getSize() - fileIOSize);
+					cloudlet.setVmId(vm.getId());
 				}
 			}
 			
@@ -127,5 +130,5 @@ public class PlanetLabHelper {
 
 		return list;
 	
-	} */
+	} 
 }
