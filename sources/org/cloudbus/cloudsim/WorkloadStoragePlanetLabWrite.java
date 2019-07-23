@@ -42,7 +42,7 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 			}
 			else {
 			workloadvalues = (input.readLine()).split(" ",-1);
-			data[i] = Integer.valueOf(workloadvalues[1])/ 100.0;
+			data[i] = Integer.valueOf(workloadvalues[3])/ 100.0;
 			}
 			}
 			catch(Exception e) {
