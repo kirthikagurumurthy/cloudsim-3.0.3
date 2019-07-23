@@ -15,9 +15,9 @@ import org.cloudbus.cloudsim.lists.PeList;
 import org.cloudbus.cloudsim.provisioners.BwProvisioner;
 import org.cloudbus.cloudsim.provisioners.RamProvisioner;
 
-
 /**
- * Host executes actions related to management of virtual machines (e.g., creation and destruction).
+ * A Host is a Physical Machine (PM) inside a Datacenter. It is also called as a Server.
+ * It executes actions related to management of virtual machines (e.g., creation and destruction).
  * A host has a defined policy for provisioning memory and bw, as well as an allocation policy for
  * Pe's to virtual machines. A host is associated to a datacenter. It can host virtual machines.
  * 
@@ -27,10 +27,10 @@ import org.cloudbus.cloudsim.provisioners.RamProvisioner;
  */
 public class Host {
 
-	/** The id. */
+	/** The id of the host. */
 	private int id;
 
-	/** The storage. */
+	/** The storage capacity. */
 	private long storage;
 
 	/** The ram provisioner. */
@@ -39,32 +39,39 @@ public class Host {
 	/** The bw provisioner. */
 	private BwProvisioner bwProvisioner;
 
-	/** The allocation policy. */
+	/** The allocation policy for scheduling VM execution. */
 	private VmScheduler vmScheduler;
-	
-	/** The vm list. */
+
+	/** The list of VMs assigned to the host. */
 	private final List<? extends Vm> vmList = new ArrayList<Vm>();
 
-	/** The pe list. */
+	/** The Processing Elements (PEs) of the host, that
+         * represent the CPU cores of it, and thus, its processing capacity. */
 	private List<? extends Pe> peList;
 
-	/** Tells whether this machine is working properly or has failed. */
+	/** Tells whether this host is working properly or has failed. */
 	private boolean failed;
 
-	/** The vms migrating in. */
+	/** The VMs migrating in. */
 	private final List<Vm> vmsMigratingIn = new ArrayList<Vm>();
 
-	/** The datacenter where the host is placed. */
-	private Datacenter datacenter;
-
+	/** The rack where the host is placed. */
+	private Rack rack;
+	
+//	/** The host on the left. */
+//	private Host l_host;
+//	
+//	/** The host on the right */
+//	private Host r_host;
+	
 	/**
 	 * Instantiates a new host.
 	 * 
-	 * @param id the id
+	 * @param id the host id
 	 * @param ramProvisioner the ram provisioner
 	 * @param bwProvisioner the bw provisioner
-	 * @param storage the storage
-	 * @param peList the pe list
+	 * @param storage the storage capacity
+	 * @param peList the host's PEs list
 	 * @param vmScheduler the vm scheduler
 	 */
 	public Host(
@@ -79,25 +86,31 @@ public class Host {
 		setBwProvisioner(bwProvisioner);
 		setStorage(storage);
 		setVmScheduler(vmScheduler);
-
 		setPeList(peList);
 		setFailed(false);
 	}
 
 	/**
-	 * Requests updating of processing of cloudlets in the VMs running in this host.
+	 * Requests updating of cloudlets' processing in VMs running in this host.
 	 * 
 	 * @param currentTime the current time
-	 * @return expected time of completion of the next cloudlet in all VMs in this host.
-	 *         Double.MAX_VALUE if there is no future events expected in this host
+	 * @return expected time of completion of the next cloudlet in all VMs in this host or
+	 *         {@link Double#MAX_VALUE} if there is no future events expected in this host
 	 * @pre currentTime >= 0.0
 	 * @post $none
+         * @todo there is an inconsistency between the return value of this method
+         * and the individual call of {@link Vm#updateVmProcessing(double, java.util.List),
+         * and consequently the {@link CloudletScheduler#updateVmProcessing(double, java.util.List)}.
+         * The current method returns {@link Double#MAX_VALUE}  while the other ones
+         * return 0. It has to be checked if there is a reason for this
+         * difference.}
 	 */
 	public double updateVmsProcessing(double currentTime) {
 		double smallerTime = Double.MAX_VALUE;
 
 		for (Vm vm : getVmList()) {
-			double time = vm.updateVmProcessing(currentTime, getVmScheduler().getAllocatedMipsForVm(vm));
+			double time = vm.updateVmProcessing(
+                                currentTime, getVmScheduler().getAllocatedMipsForVm(vm));
 			if (time > 0.0 && time < smallerTime) {
 				smallerTime = time;
 			}
@@ -107,7 +120,7 @@ public class Host {
 	}
 
 	/**
-	 * Adds the migrating in vm.
+	 * Adds a VM migrating into the current host.
 	 * 
 	 * @param vm the vm
 	 */
@@ -116,15 +129,14 @@ public class Host {
 
 		if (!getVmsMigratingIn().contains(vm)) {
 			if (getStorage() < vm.getSize()) {
-				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #"
-						+ getId() + " failed by storage");
+				Log.printConcatLine("[VmScheduler.addMigratingInVm] Allocation of VM #", vm.getId(), " to Host #",
+						getId(), " failed by storage");
 				System.exit(0);
 			}
-			
-			
+
 			if (!getRamProvisioner().allocateRamForVm(vm, vm.getCurrentRequestedRam())) {
-				Log.printLine("[VmScheduler.addMigratingInVm] Allocation of VM #" + vm.getId() + " to Host #"
-						+ getId() + " failed by RAM");
+				Log.printConcatLine("[VmScheduler.addMigratingInVm] Allocation of VM #", vm.getId(), " to Host #",
+						getId(), " failed by RAM");
 				System.exit(0);
 			}
 
@@ -141,10 +153,7 @@ public class Host {
 				System.exit(0);
 			}
 
-			if(getStorage() > vm.getSize()) {
-				setStorage(getStorage() - vm.getSize());
-			}
-			
+			setStorage(getStorage() - vm.getSize());
 
 			getVmsMigratingIn().add(vm);
 			getVmList().add(vm);
@@ -154,7 +163,7 @@ public class Host {
 	}
 
 	/**
-	 * Removes the migrating in vm.
+	 * Removes a migrating in vm.
 	 * 
 	 * @param vm the vm
 	 */
@@ -167,7 +176,8 @@ public class Host {
 	}
 
 	/**
-	 * Reallocate migrating in vms.
+	 * Reallocate migrating in vms. Gets the VM in the migrating in queue
+         * and allocate them on the host.
 	 */
 	public void reallocateMigratingInVms() {
 		for (Vm vm : getVmsMigratingIn()) {
@@ -180,14 +190,13 @@ public class Host {
 			getRamProvisioner().allocateRamForVm(vm, vm.getCurrentRequestedRam());
 			getBwProvisioner().allocateBwForVm(vm, vm.getCurrentRequestedBw());
 			getVmScheduler().allocatePesForVm(vm, vm.getCurrentRequestedMips());
-			if(getStorage() > vm.getSize()) {
-				setStorage(getStorage() - vm.getSize());
-			}
+			setStorage(getStorage() - vm.getSize());
 		}
 	}
 
 	/**
-	 * Checks if is suitable for vm.
+	 * Checks if the host is suitable for vm. If it has enough resources
+         * to attend the VM.
 	 * 
 	 * @param vm the vm
 	 * @return true, if is suitable for vm
@@ -200,7 +209,7 @@ public class Host {
 	}
 
 	/**
-	 * Allocates PEs and memory to a new VM in the Host.
+	 * Try to allocate resources to a new VM in the Host.
 	 * 
 	 * @param vm Vm being started
 	 * @return $true if the VM could be started in the host; $false otherwise
@@ -209,35 +218,33 @@ public class Host {
 	 */
 	public boolean vmCreate(Vm vm) {
 		if (getStorage() < vm.getSize()) {
-			Log.printLine("[VmScheduler.vmCreate] Allocation of VM #" + vm.getId() + " to Host #" + getId()
-					+ " failed by storage");
+			Log.printConcatLine("[VmScheduler.vmCreate] Allocation of VM #", vm.getId(), " to Host #", getId(),
+					" failed by storage");
 			return false;
 		}
 
 		if (!getRamProvisioner().allocateRamForVm(vm, vm.getCurrentRequestedRam())) {
-			Log.printLine("[VmScheduler.vmCreate] Allocation of VM #" + vm.getId() + " to Host #" + getId()
-					+ " failed by RAM");
+			Log.printConcatLine("[VmScheduler.vmCreate] Allocation of VM #", vm.getId(), " to Host #", getId(),
+					" failed by RAM");
 			return false;
 		}
 
 		if (!getBwProvisioner().allocateBwForVm(vm, vm.getCurrentRequestedBw())) {
-			Log.printLine("[VmScheduler.vmCreate] Allocation of VM #" + vm.getId() + " to Host #" + getId()
-					+ " failed by BW");
+			Log.printConcatLine("[VmScheduler.vmCreate] Allocation of VM #", vm.getId(), " to Host #", getId(),
+					" failed by BW");
 			getRamProvisioner().deallocateRamForVm(vm);
 			return false;
 		}
 
 		if (!getVmScheduler().allocatePesForVm(vm, vm.getCurrentRequestedMips())) {
-			Log.printLine("[VmScheduler.vmCreate] Allocation of VM #" + vm.getId() + " to Host #" + getId()
-					+ " failed by MIPS");
+			Log.printConcatLine("[VmScheduler.vmCreate] Allocation of VM #", vm.getId(), " to Host #", getId(),
+					" failed by MIPS");
 			getRamProvisioner().deallocateRamForVm(vm);
 			getBwProvisioner().deallocateBwForVm(vm);
 			return false;
 		}
 
-		if(getStorage() > vm.getSize()) {
-			setStorage(getStorage() - vm.getSize());
-		}
+		setStorage(getStorage() - vm.getSize());
 		getVmList().add(vm);
 		vm.setHost(this);
 		return true;
@@ -274,7 +281,7 @@ public class Host {
 	}
 
 	/**
-	 * Deallocate all hostList for the VM.
+	 * Deallocate all resources of a VM.
 	 * 
 	 * @param vm the VM
 	 */
@@ -286,7 +293,7 @@ public class Host {
 	}
 
 	/**
-	 * Deallocate all hostList for the VM.
+	 * Deallocate all resources of all VMs.
 	 */
 	protected void vmDeallocateAll() {
 		getRamProvisioner().deallocateRamForAllVms();
@@ -295,7 +302,7 @@ public class Host {
 	}
 
 	/**
-	 * Returns a VM object.
+	 * Gets a VM by its id and user.
 	 * 
 	 * @param vmId the vm id
 	 * @param userId ID of VM's owner
@@ -343,7 +350,7 @@ public class Host {
 	 * Allocates PEs for a VM.
 	 * 
 	 * @param vm the vm
-	 * @param mipsShare the mips share
+	 * @param mipsShare the list of MIPS share to be allocated to the VM
 	 * @return $true if this policy allows a new VM in the host, $false otherwise
 	 * @pre $none
 	 * @post $none
@@ -364,7 +371,7 @@ public class Host {
 	}
 
 	/**
-	 * Returns the MIPS share of each Pe that is allocated to a given VM.
+	 * Gets the MIPS share of each Pe that is allocated to a given VM.
 	 * 
 	 * @param vm the vm
 	 * @return an array containing the amount of MIPS of each pe that is available to the VM
@@ -376,7 +383,7 @@ public class Host {
 	}
 
 	/**
-	 * Gets the total allocated MIPS for a VM over all the PEs.
+	 * Gets the total allocated MIPS for a VM along all its PEs.
 	 * 
 	 * @param vm the vm
 	 * @return the allocated mips for vm
@@ -386,7 +393,7 @@ public class Host {
 	}
 
 	/**
-	 * Returns maximum available MIPS among all the PEs.
+	 * Returns the maximum available MIPS among all the PEs of the host.
 	 * 
 	 * @return max mips
 	 */
@@ -395,7 +402,7 @@ public class Host {
 	}
 
 	/**
-	 * Gets the free mips.
+	 * Gets the total free MIPS available at the host.
 	 * 
 	 * @return the free mips
 	 */
@@ -404,9 +411,9 @@ public class Host {
 	}
 
 	/**
-	 * Gets the machine bw.
+	 * Gets the host bw.
 	 * 
-	 * @return the machine bw
+	 * @return the host bw
 	 * @pre $none
 	 * @post $result > 0
 	 */
@@ -415,9 +422,9 @@ public class Host {
 	}
 
 	/**
-	 * Gets the machine memory.
+	 * Gets the host memory.
 	 * 
-	 * @return the machine memory
+	 * @return the host memory
 	 * @pre $none
 	 * @post $result > 0
 	 */
@@ -426,9 +433,9 @@ public class Host {
 	}
 
 	/**
-	 * Gets the machine storage.
+	 * Gets the host storage.
 	 * 
-	 * @return the machine storage
+	 * @return the host storage
 	 * @pre $none
 	 * @post $result >= 0
 	 */
@@ -437,18 +444,18 @@ public class Host {
 	}
 
 	/**
-	 * Gets the id.
+	 * Gets the host id.
 	 * 
-	 * @return the id
+	 * @return the host id
 	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
-	 * Sets the id.
+	 * Sets the host id.
 	 * 
-	 * @param id the new id
+	 * @param id the new host id
 	 */
 	protected void setId(int id) {
 		this.id = id;
@@ -550,16 +557,16 @@ public class Host {
 	}
 
 	/**
-	 * Checks if is failed.
+	 * Checks if the host PEs have failed.
 	 * 
-	 * @return true, if is failed
+	 * @return true, if the host PEs have failed; false otherwise
 	 */
 	public boolean isFailed() {
 		return failed;
 	}
 
 	/**
-	 * Sets the PEs of this machine to a FAILED status. NOTE: <tt>resName</tt> is used for debugging
+	 * Sets the PEs of the host to a FAILED status. NOTE: <tt>resName</tt> is used for debugging
 	 * purposes, which is <b>ON</b> by default. Use {@link #setFailed(boolean)} if you do not want
 	 * this information.
 	 * 
@@ -575,7 +582,7 @@ public class Host {
 	}
 
 	/**
-	 * Sets the PEs of this machine to a FAILED status.
+	 * Sets the PEs of the host to a FAILED status.
 	 * 
 	 * @param failed the failed
 	 * @return <tt>true</tt> if successful, <tt>false</tt> otherwise
@@ -588,7 +595,7 @@ public class Host {
 	}
 
 	/**
-	 * Sets the particular Pe status on this Machine.
+	 * Sets the particular Pe status on the host.
 	 * 
 	 * @param peId the pe id
 	 * @param status Pe status, either <tt>Pe.FREE</tt> or <tt>Pe.BUSY</tt>
@@ -611,21 +618,21 @@ public class Host {
 	}
 
 	/**
-	 * Gets the data center.
+	 * Gets the rack of the host.
 	 * 
-	 * @return the data center where the host runs
+	 * @return the rack where the host runs
 	 */
-	public Datacenter getDatacenter() {
-		return datacenter;
+	public Rack getRack() {
+		return rack;
 	}
 
 	/**
-	 * Sets the data center.
+	 * Sets the rack of the host.
 	 * 
-	 * @param datacenter the data center from this host
+	 * @param rack the data center from this host
 	 */
-	public void setDatacenter(Datacenter datacenter) {
-		this.datacenter = datacenter;
+	public void setRack(Rack rack) {
+		this.rack = rack;
 	}
 
 }
