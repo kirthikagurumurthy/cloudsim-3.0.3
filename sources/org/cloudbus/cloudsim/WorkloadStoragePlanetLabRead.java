@@ -15,7 +15,7 @@ public class WorkloadStoragePlanetLabRead implements WorkloadStorage {
 	/** The data (5 min * 288 = 24 hours). */
 	private final double[] data; 
 	
-	private double SizeWritten = 0;
+	private double Sizeread = 0;
 	
 	private int numberOfreads;
 	/**
@@ -84,20 +84,20 @@ public class WorkloadStoragePlanetLabRead implements WorkloadStorage {
 	 * @see cloudsim.power.UtilizationModel#getUtilization(double)
 	 */
 	@Override
-	public double getSizeWritten(double time, double percentage, File file)  // percentage per read (may depend on the type of storage drive).
+	public double getSize(double time, double percentage, int fileSize)  // percentage per read (may depend on the type of storage drive).
 	{	
-		if(file.getSize()>0) {
+		if(ffileSize>0) {
 		if (time % getSchedulingInterval() == 0) {
-			int fileSize = file.getSize();
-			file.setFileSize(file.getSize() -(new Double(data[(int) time / (int) getSchedulingInterval()]*percentage*fileSize )).intValue());
+		//	int fileSize = fileSize;
+			//file.setFileSize(fileSize -(new Double(data[(int) time / (int) getSchedulingInterval()]*percentage*fileSize )).intValue());
 			return data[(int) time / (int) getSchedulingInterval()]*percentage*fileSize;
 		}
 		
 		int time1 = (int) Math.floor(time / getSchedulingInterval());
-		int fileSize = file.getSize();
-		file.setFileSize(file.getSize() -(new Double(data[time1]*percentage*fileSize )).intValue());
-		this.SizeWritten = data[time1]*percentage*file.getSize(); // gives the size written. .
-		return SizeWritten;
+	//	int fileSize = fileSize;
+		//file.setFileSize(fileSize -(new Double(data[time1]*percentage*fileSize )).intValue());
+		this.Sizeread = data[time1]*percentage*fileSize; // gives the size read. .
+		return Sizeread;
 		}
 		else {
 			return 0;
@@ -105,8 +105,8 @@ public class WorkloadStoragePlanetLabRead implements WorkloadStorage {
 	}
 	
 	
-	public int  getNumberOfreads(double time, File file) {
-		if (file.getSize() < 0 ) {	
+	public int  getNumber(double time, int fileSize) {
+		if (fileSize < 0 ) {	
 			return 0;
 		}
 		
@@ -117,15 +117,15 @@ public class WorkloadStoragePlanetLabRead implements WorkloadStorage {
 		return numberOfreads;
 	}
 	
-	public int getTotalNumberOfreads(double percentagePerread, File file ) {
+	public int getTotalNumber(double percentagePerread, int fileSize ) {
 		double size=0;
 		double now = 0; //initial value of total number of reads
 		for(int i=0; i<data.length;i++) {
 			double numberOfreads = data[i];
 			
-			if(Math.floor(size + numberOfreads*percentagePerread*file.getSize()) < file.getSize()) { //checking if the writing again makes the size written greater than the file size
+			if(Math.floor(size + numberOfreads*percentagePerread*fileSize) < fileSize) { //checking if the writing again makes the size read greater than the file size
 			now = now + numberOfreads;
-			size = size + numberOfreads*percentagePerread*file.getSize();
+			size = size + numberOfreads*percentagePerread*fileSize;
 			}
 			else {
 				now = now+1; // If the above condition fails, then adding one more read to minimize error.
