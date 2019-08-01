@@ -15,6 +15,8 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 	/** The data (5 min * 288 = 24 hours). */
 	private final double[] data; 
 	
+	private final double[] speed; //speed per write.
+	
 	private double SizeWritten = 0;
 	
 	private int numberOfWrites;
@@ -29,6 +31,7 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 			throws NumberFormatException,
 			IOException {
 		data = new double[289];
+		speed = new double[289];
 		setSchedulingInterval(schedulingInterval);
 		BufferedReader input = new BufferedReader(new FileReader(inputPath));
 		int n = data.length;
@@ -39,17 +42,21 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 			String[] workloadvalues = new String[length];
 			if(length <= 1) {
 				data[i] = 0;
+				speed[i] = 0;
 			}
 			else {
 			workloadvalues = (input.readLine()).split(" ",-1);
-			data[i] = Integer.valueOf(workloadvalues[3])/ 100.0;
+			data[i] = Integer.valueOf(workloadvalues[3]);
+			speed[i] = Integer.valueOf(workloadvalues[5]);
 			}
 			}
 			catch(Exception e) {
 				data[i]=0;
+				speed[i] = 0;
 			}
 		}
 		data[n - 1] = data[n - 2];
+		speed[n-1] = speed[n-2];
 		input.close();
 	}
 		
@@ -67,15 +74,32 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 			throws NumberFormatException,
 			IOException {
 		setSchedulingInterval(schedulingInterval);
+		speed = new double[dataSamples];
 		data = new double[dataSamples];
 		BufferedReader input = new BufferedReader(new FileReader(inputPath));
 		int n = data.length;
+	
 		for (int i = 0; i < n - 1; i++) {
-			String[] workloadvalues = new String[3];
-			workloadvalues = (input.readLine()).split("",-1);
-			data[i] = Integer.valueOf(workloadvalues[3]) / 100.0;
+			try {
+			int length = ((input.readLine()).split(" ",-1)).length;
+			String[] workloadvalues = new String[length];
+			if(length <= 1) {
+				data[i] = 0;
+				speed[i] = 0;
+			}
+			else {
+			workloadvalues = (input.readLine()).split(" ",-1);
+			data[i] = Integer.valueOf(workloadvalues[3]);
+			speed[i] = Integer.valueOf(workloadvalues[5]);
+			}
+			}
+			catch(Exception e) {
+				data[i]=0;
+				speed[i] = 0;
+			}
 		}
 		data[n - 1] = data[n - 2];
+		speed[n-1] = speed[n-2];
 		input.close();
 	}
 
@@ -104,7 +128,7 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 		}
 	}
 	
-	
+	//
 	public int  getNumber(double time, int fileSize) {
 		if (fileSize < 0 ) {	
 			return 0;
@@ -117,18 +141,24 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 		return numberOfWrites;
 	}
 	
-	public int getTotalNumber(double percentagePerWrite, int fileSize ) {
+	//Gets total number of writes .  SizePerWrite can be made as a constant value for a particular storage type.
+	public int getTotalNumber( int fileSize ) {
 		double size=0;
 		double now = 0; //initial value of total number of writes
 		for(int i=0; i<data.length;i++) {
 			double numberOfWrites = data[i];
+			double WriteSpeed = speed[i];
 			
-			if(Math.floor(size + numberOfWrites*percentagePerWrite*fileSize) < fileSize) { //checking if the writing again makes the size written greater than the file size
+			if(Math.floor(size + numberOfWrites*WriteSpeed) < fileSize) { //checking if the writing again makes the size written greater than the file size
 			now = now + numberOfWrites;
-			size = size + numberOfWrites*percentagePerWrite*fileSize;
+			size = size + numberOfWrites*WriteSpeed;
+			}
+			else if(size != fileSize) {
+				now = now+1;
+				break;
 			}
 			else {
-				now = now+1; // If the above condition fails, then adding one more write to minimize error.
+				break;
 			}
 		}
 		@SuppressWarnings("deprecation")
