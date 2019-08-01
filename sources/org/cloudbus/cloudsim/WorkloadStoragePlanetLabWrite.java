@@ -108,20 +108,30 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 	 * @see cloudsim.power.UtilizationModel#getUtilization(double)
 	 */
 	@Override
-	public double getSize(double time, double percentage, int fileSize)  // percentage per write (may depend on the type of storage drive).
+	public double getSize(double time, int fileSize)  // percentage per read (may depend on the type of storage drive).
 	{	
 		if(fileSize>0) {
 		if (time % getSchedulingInterval() == 0) {
-			//int fileSize = fileSize;
-		//	file.setFileSize(fileSize -(new Double(data[(int) time / (int) getSchedulingInterval()]*percentage*fileSize )).intValue());
-			return data[(int) time / (int) getSchedulingInterval()]*percentage*fileSize;
+		//	int fileSize = fileSize;
+			//file.setFileSize(fileSize -(new Double(data[(int) time / (int) getSchedulingInterval()]*percentage*fileSize )).intValue());
+			if(data[(int) time / (int) getSchedulingInterval()]*speed[(int) time / (int) getSchedulingInterval()]<fileSize) {
+				return data[(int) time / (int) getSchedulingInterval()]*speed[(int) time / (int) getSchedulingInterval()];
+			}
+			else {
+				return fileSize;
+			}
 		}
 		
 		int time1 = (int) Math.floor(time / getSchedulingInterval());
-		//int fileSize = fileSize;
+	//	int fileSize = fileSize;
 		//file.setFileSize(fileSize -(new Double(data[time1]*percentage*fileSize )).intValue());
-		this.SizeWritten = data[time1]*percentage*fileSize; // gives the size written. .
-		return SizeWritten;
+		if(data[time1]*speed[time1] < fileSize) {
+			this.SizeWritten = data[time1]*speed[time1]; // gives the size read. .
+			return SizeWritten;
+		}
+		else {
+			return fileSize;
+		}
 		}
 		else {
 			return 0;
