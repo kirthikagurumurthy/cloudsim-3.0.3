@@ -108,7 +108,7 @@ public class WorkloadStoragePlanetLabWrite implements WorkloadStorage {
 	 * @see cloudsim.power.UtilizationModel#getUtilization(double)
 	 */
 	@Override
-	public double getSize(double time, int fileSize)  // percentage per read (may depend on the type of storage drive).
+	public double getSize(double time, int fileSize)  // size written at a given time.
 	{	
 		if(fileSize>0) {
 		if (time % getSchedulingInterval() == 0) {
